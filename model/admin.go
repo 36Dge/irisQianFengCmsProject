@@ -13,7 +13,7 @@ type Admin struct {
 	Pwd        string    `xorm:"varchar(255)" json:"pwd"`
 	CityName   string    `xrom:"varchar(12)" json:"city_name"`
 	CityId     int64     `xorm:"index" json:"city_id"`
-	Ctiy       *City     `xorm:"- <- ->"` // 所对应的城市结构体
+	City       *City     `xorm:"- <- ->"` // 所对应的城市结构体
 }
 
 // 从Admin数据库实体转换为前端请求的resp的json格式
@@ -29,5 +29,5 @@ func (this *Admin) AdminToRespDesc() interface{} {
 		"city":        this.CityName,
 		"admin":       "管理员",
 	}
-
+	return respDesc
 }

@@ -5,9 +5,9 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
-	"go/types"
 	"irisDemo/QianFengCmsProject/model"
 	"irisDemo/QianFengCmsProject/service"
+	"irisDemo/QianFengCmsProject/utils"
 )
 
 const (
