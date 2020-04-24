@@ -2,8 +2,7 @@ package main
 
 import (
 	"github.com/kataras/iris"
-	"github.com/kataras/iris/_examples/mvc/login/datasource"
-	"github.com/kataras/iris/_examples/mvc/login/services"
+	//"github.com/kataras/iris/_examples/mvc/login/datasource"
 	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
@@ -11,6 +10,7 @@ import (
 	"irisDemo/QianFengCmsProject/controller"
 	"irisDemo/QianFengCmsProject/service"
 	"time"
+	"irisDemo/QianFengCmsProject/datasource"
 )
 
 func main() {
@@ -92,6 +92,12 @@ func mvcHandle(app *iris.Application) {
 		Cookie:  "sessioncooke",
 		Expires: 24 * time.Hour,
 	})
+
+	// 获取redis实例
+	redis := datasource.NewRedis()
+	//设置session的同步位置为redis
+	sessManager.UseDatabase(redis)
+
 	// a 构造一个数据库引擎
 	engine := datasource.NewMysqlEngine()
 
@@ -127,10 +133,4 @@ func mvcHandle(app *iris.Application) {
 
 // 订单模块
 
-
-
-
-
 // 项目设置
-
-

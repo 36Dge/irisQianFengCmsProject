@@ -2,17 +2,33 @@ package datasource
 
 import (
 	"github.com/go-xorm/xorm"
+	"github.com/kataras/iris"
+	"irisDemo/QianFengCmsProject/config"
 	"irisDemo/QianFengCmsProject/model"
 )
 
 // 实例化数据库引擎方法：mysql的数据库引擎
 
 func NewMysqlEngine() *xorm.Engine {
-	// 创建数据库引擎对象
-	engine, err := xorm.NewEngine("MySQL", "root:e13212ss@/Test?charset = utf8")
-	if err != nil {
-		panic(err.Error())
+
+	initConfig := config.InitConfig()
+	if initConfig == nil {
+		return nil
 	}
+
+	database := initConfig.DataBase
+
+	dataSourceName := database.User + ":" + database.Pwd + "@tcp(" + database.Host + ")/" + database.Database + "?charset=utf8"
+
+	// 创建数据库引擎对象
+	//engine, err := xorm.NewEngine("MySQL", "root:e13212ss@/Test?charset = utf8")
+	//if err != nil {
+	//	panic(err.Error())
+	//}
+
+	engine, err := xorm.NewEngine(database.Drive, dataSourceName)
+	iris.New().Logger().Info(database)
+
 
 	//同步数据库结构:主要负责对数据结构实体同步更新到数据库表
 	/*
