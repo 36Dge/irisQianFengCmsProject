@@ -125,6 +125,12 @@ func mvcHandle(app *iris.Application) {
 	statis.Handle(new(controller.StatisController))
 }
 
+// 订单模块
+
+
+
+
+
 // 项目设置
 
 
