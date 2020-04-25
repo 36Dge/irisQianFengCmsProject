@@ -129,8 +129,17 @@ func mvcHandle(app *iris.Application) {
 		sessManager.Start,
 	)
 	statis.Handle(new(controller.StatisController))
+	// 订单模块
+	orderService := service.NewOrderService(engine)
+	order := mvc.New(app.Party("/bos/order/"))
+	order.Register(
+		orderService,
+		sessManager.Start,
+	)
+	order.Handle(new(controller.OrderController)) // 控制器
+
+	// 商铺模块
+
+	// 项目设置
+
 }
-
-// 订单模块
-
-// 项目设置
