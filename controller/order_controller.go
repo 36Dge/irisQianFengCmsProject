@@ -4,6 +4,7 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"github.com/kataras/iris/sessions"
+	"irisDemo/QianFengCmsProject/service"
 	"irisDemo/QianFengCmsProject/utils"
 	"strconv"
 )
@@ -66,6 +67,19 @@ func (orderController *OrderController) Get() mvc.Result {
 		}
 	}
 
+	// 将查询到的用户数据进行转换成前端需要的内容
+	var respList []interface{}
+	for _, detail := range orderList {
+		respList = append(respList, detail.OrderDetailsResp2())
+	}
 
+	// 返回用户列表
+	return mvc.Response{
+		Object: &respList,
+	}
 
 }
+
+// 查询订单记录总数
+
+

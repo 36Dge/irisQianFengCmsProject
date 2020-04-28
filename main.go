@@ -2,6 +2,10 @@ package main
 
 import (
 	"github.com/kataras/iris"
+	"irisDemo/QianFengCmsProject/model"
+	"irisDemo/QianFengCmsProject/utils"
+	"strconv"
+
 	//"github.com/kataras/iris/_examples/mvc/login/datasource"
 	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/mvc"
@@ -40,12 +44,15 @@ func main() {
 func newApp() *iris.Application {
 	app := iris.New()
 
+	// 设定应用图标
+	app.Favicon("./static/favicons/favicon.ico")
 	// 设置日志级别 开发阶段为debug
 	app.Logger().SetLevel("debug")
 
 	// 注册静态资源
 	app.StaticWeb("/static", "./static")
 	app.StaticWeb("/manager/static", "./static")
+	app.StaticWeb("/img", "./uploads")
 
 	// 注册视图文件
 	app.RegisterView(iris.HTML("./static", ".html"))
@@ -120,6 +127,49 @@ func mvcHandle(app *iris.Application) {
 		sessManager.Start,
 	)
 	user.Handle(new(controller.Usercontroller))
+
+	// 获取用户详细信息
+	app.Get("/v1/user/{user_name}", func(context context.Context) {
+		userName := context.Params().Get(user_name)
+		var user model.User
+		_, err := engine.Where("user_name= ?", userName).Get(&user)
+		if err != nil {
+			context.JSON(iris.Map{
+				"status":  utils.RECODE_FAIL,
+				"type":    utils.RESPMSG_ERROR_USERINFO,
+				"message": utils.Recode2Text(utils.RESPMSG_ERROR_ORDERINFO),
+			})
+
+		} else {
+			context.JSON(user)
+		}
+	})
+
+	// 获取地址信息
+	app.Get("/v1/address/{address_id}", func(context context.Context) {
+		address_id := context.Params().Get("address_id")
+		addressID, err := strconv.Atoi(address_id)
+		if err != nil {
+			context.JSON(iris.Map{
+				"status":  utils.RECODE_FAIL,
+				"type":    utils.RESPMSG_ERROR_USERINFO,
+				"message": utils.Recode2Text(utils.RESPMSG_ERROR_ORDERINFO),
+			})
+		}
+		var address model.Address
+		_, err = engine.Id(addressID).Get(&address)
+		if err != nil {
+			context.JSON(iris.Map{
+				"status":  utils.RECODE_FAIL,
+				"type":    utils.RESPMSG_ERROR_USERINFO,
+				"message": utils.Recode2Text(utils.RESPMSG_ERROR_ORDERINFO),
+			})
+		}
+
+		// 查询数据成功
+		context.JSON(address)
+
+	})
 
 	// 统计功能模块
 	statisService := service.NewStatisService(engine)
