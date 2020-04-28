@@ -15,6 +15,8 @@ type AdminService interface {
 
 	// 获取管理员总数
 	GetAdminCount() (int64, error)
+
+	SaveAvatarImg(adminId int64, fileName string) bool
 }
 
 func NewAdminService(db *xorm.Engine) AdminService {
@@ -48,4 +50,15 @@ func (ac *adminService) GetByAdminNameAndPassword(username, password string) (mo
 	return admin, admin.AdminId != 0
 
 }
+
+// 保存头像信息
+
+func (ac *adminService) SaveAvatarImg(adminId int64, fileName string) bool {
+
+	admin := model.Admin{Avatar: fileName}
+	_, err := ac.engine.Id(adminId).Cols("avatar").Update(&admin)
+	return err != nil
+}
+
+
 

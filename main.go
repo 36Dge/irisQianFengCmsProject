@@ -2,8 +2,10 @@ package main
 
 import (
 	"github.com/kataras/iris"
+	"io"
 	"irisDemo/QianFengCmsProject/model"
 	"irisDemo/QianFengCmsProject/utils"
+	"os"
 	"strconv"
 
 	//"github.com/kataras/iris/_examples/mvc/login/datasource"
@@ -191,5 +193,54 @@ func mvcHandle(app *iris.Application) {
 	// 商铺模块
 
 	// 项目设置
+
+	// 文件上传
+
+	app.Post("/admin/update/avatar/{adminId}", func(context context.Context) {
+		adminId := context.Params().Get("adminId")
+		iris.New().Logger().Info(adminId)
+		file, info, err := context.FormFile("file")
+		if err != nil {
+			iris.New().Logger().Info(err.Error())
+			context.JSON(iris.Map{
+				"status":  utils.RECODE_FAIL,
+				"type":    utils.RESPMSG_ERROR_CATEGORYADD,
+				"failure": utils.Recode2Text(utils.RESPMSG_ERROR_PICTUREADD),
+			})
+			return
+		}
+		defer file.Close()
+		fname := info.Filename
+		out, err := os.OpenFile("./uploads/"+fname, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			iris.New().Logger().Info(err.Error())
+			context.JSON(iris.Map{
+				"status":  utils.RECODE_FAIL,
+				"type":    utils.RESPMSG_ERROR_CATEGORYADD,
+				"failure": utils.Recode2Text(utils.RESPMSG_ERROR_PICTUREADD),
+			})
+			return
+		}
+
+		iris.New().Logger().Info("文件路径：" + out.Name())
+		defer out.Close()
+		_, err = io.Copy(out, file)
+		if err != nil {
+			context.JSON(iris.Map{
+				"status":  utils.RECODE_FAIL,
+				"type":    utils.RESPMSG_ERROR_CATEGORYADD,
+				"failure": utils.Recode2Text(utils.RESPMSG_ERROR_PICTUREADD),
+			})
+			return
+		}
+
+		intAdminId, _ := strconv.Atoi(adminId)
+		adminService.SaveAvatarImg(int64(intAdminId), fname)
+		context.JSON(iris.Map{
+			"status":     utils.RECODE_OK,
+			"image_path": fname,
+		})
+
+	})
 
 }
