@@ -44,8 +44,11 @@ func NewMysqlEngine() *xorm.Engine {
 		new(model.Permission),
 		new(model.City),
 		new(model.Admin),
-		new(model.AdminPermission),
 		new(model.User),
+		new(model.Address),
+		new(model.Shop),
+		new(model.OrderStatus),
+		new(model.AdminPermission),
 		new(model.UserOrder),
 	)
 	if err != nil {

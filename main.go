@@ -191,6 +191,13 @@ func mvcHandle(app *iris.Application) {
 	order.Handle(new(controller.OrderController)) // 控制器
 
 	// 商铺模块
+	shopService := service.NewShopService(engine)
+	shop := mvc.New(app.Party("/shopping/restaurants/"))
+	shop.Register(
+		shopService,
+		sessManager.Start,
+		)
+	shop.Handle(new(controller.ShopController)) // 控制器
 
 	// 项目设置
 
