@@ -1,10 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/kataras/iris"
 	"io"
+	"io/ioutil"
 	"irisDemo/QianFengCmsProject/model"
 	"irisDemo/QianFengCmsProject/utils"
+	"net/http"
 	"os"
 	"strconv"
 
@@ -196,10 +199,45 @@ func mvcHandle(app *iris.Application) {
 	shop.Register(
 		shopService,
 		sessManager.Start,
-		)
+	)
 	shop.Handle(new(controller.ShopController)) // 控制器
 
-	// 项目设置
+	// 添加食品类别
+	categoryService := service.NewCategoryService(engine)
+	category := mvc.New(app.Party("/shopping"))
+	category.Register(
+		categoryService,
+	)
+	category.Handle(new(controller.CategoryController))
+
+	// 食品模块
+	foodService := service.NewFoodService(engine)
+	foodMvc := mvc.New(app.Party("/shopping/v2/foods"))
+	foodMvc.Register(
+		foodService,
+	)
+	foodMvc.Handle(new(controller.FoodController))
+	// 地址Poi检索
+	app.Get("/v1/posi", func(context context.Context) {
+		path := context.Request().URL.String()
+		iris.New().Logger().Info(path)
+		rs, err := http.Get("https://elm.cangdu.org" + path)
+		if err != nil {
+			context.JSON(iris.Map{
+				"status":  utils.RECODE_FAIL,
+				"type":    utils.RESPMSG_ERROR_SEARCHADDRESS,
+				"message": utils.Recode2Text(utils.RESPMSG_ERROR_SEARCHADDRESS),
+			})
+			return
+		}
+		// 请求成功
+		body, err := ioutil.ReadAll(rs.Body)
+		var searchList []*model.PoiSearch
+		//安马歇尔 马歇尔
+		json.Unmarshal(body, &searchList)
+		context.JSON(&searchList)
+
+	})
 
 	// 文件上传
 
